@@ -1,11 +1,22 @@
 import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/src/lib/prisma"
+import { env } from "@/src/lib/env"
 import { authConfig } from "./auth.config"
+
+const baseAdapter = PrismaAdapter(prisma)
+const secureAdapter = {
+  ...baseAdapter,
+  linkAccount: (data: Parameters<NonNullable<typeof baseAdapter.linkAccount>>[0]) => {
+    // No almacenar tokens OAuth en la BD — con JWT strategy no se leen de vuelta
+    const { access_token, refresh_token, id_token, ...safeData } = data
+    return baseAdapter.linkAccount!(safeData)
+  },
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  adapter: PrismaAdapter(prisma),
+  adapter: secureAdapter,
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account }) {
@@ -23,8 +34,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const response = await fetch("https://oauth2.googleapis.com/token", {
           method: "POST",
           body: new URLSearchParams({
-            client_id: process.env.AUTH_GOOGLE_ID!,
-            client_secret: process.env.AUTH_GOOGLE_SECRET!,
+            client_id: env.AUTH_GOOGLE_ID,
+            client_secret: env.AUTH_GOOGLE_SECRET,
             grant_type: "refresh_token",
             refresh_token: token.refresh_token as string,
           }),
@@ -42,7 +53,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     },
     async session({ session, token }) {
-      session.access_token = token.access_token as string
+      // access_token NO se copia al session — queda solo en el JWT (httpOnly cookie)
+      // Los route handlers usan getToken() para acceder al token server-side
       session.error = token.error as "RefreshTokenError" | undefined
       return session
     },
@@ -51,7 +63,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
 declare module "next-auth" {
   interface Session {
-    access_token: string
     error?: "RefreshTokenError"
   }
 }

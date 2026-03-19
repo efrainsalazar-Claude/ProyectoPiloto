@@ -72,7 +72,7 @@ export default function CalendarView({ onSelectSlot, onEventClick }: CalendarVie
         }))
       )
     } catch (err) {
-      console.error("Error fetching calendar events:", err)
+      console.error("Error fetching calendar events")
     } finally {
       setLoading(false)
     }

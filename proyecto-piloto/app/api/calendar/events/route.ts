@@ -1,12 +1,22 @@
-import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { NextRequest, NextResponse } from "next/server"
+import { getServerToken } from "@/src/lib/get-access-token"
 import { calendarRequest } from "@/src/lib/google-calendar"
+import { isValidISO8601, sanitizeEventBody } from "@/src/lib/calendar-validation"
+import { checkRateLimit } from "@/src/lib/rate-limiter"
 
-export async function GET(request: Request) {
+const MAX_PAGES = 10
+
+export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
-    if (!session?.access_token) {
+    const { accessToken, userId, error } = await getServerToken(request)
+    if (!accessToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+    if (error === "RefreshTokenError") {
+      return NextResponse.json({ error: "Session expired, please sign in again" }, { status: 401 })
+    }
+    if (userId && !checkRateLimit(userId)) {
+      return NextResponse.json({ error: "Too Many Requests" }, { status: 429 })
     }
 
     const { searchParams } = new URL(request.url)
@@ -17,10 +27,17 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "timeMin y timeMax son requeridos" }, { status: 400 })
     }
 
+    if (!isValidISO8601(timeMin) || !isValidISO8601(timeMax)) {
+      return NextResponse.json({ error: "Invalid date format. Use ISO 8601." }, { status: 400 })
+    }
+
     const allEvents: unknown[] = []
     let pageToken: string | undefined = undefined
+    let pageCount = 0
 
     while (true) {
+      if (++pageCount > MAX_PAGES) break
+
       const queryParams = new URLSearchParams({
         timeMin,
         timeMax,
@@ -33,7 +50,7 @@ export async function GET(request: Request) {
       const data = await calendarRequest<{ items?: unknown[]; nextPageToken?: string }>(
         `/primary/events?${queryParams}`,
         "GET",
-        session.access_token
+        accessToken
       )
       allEvents.push(...(data.items ?? []))
       if (!data.nextPageToken) break
@@ -46,18 +63,28 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
-    if (!session?.access_token) {
+    const { accessToken, userId, error } = await getServerToken(request)
+    if (!accessToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+    if (error === "RefreshTokenError") {
+      return NextResponse.json({ error: "Session expired, please sign in again" }, { status: 401 })
+    }
+    if (userId && !checkRateLimit(userId)) {
+      return NextResponse.json({ error: "Too Many Requests" }, { status: 429 })
+    }
 
-    const body = await request.json()
+    const rawBody = await request.json()
+    const body = sanitizeEventBody(rawBody)
+    if (!body.summary || !body.start || !body.end) {
+      return NextResponse.json({ error: "Missing required fields: summary, start, end" }, { status: 400 })
+    }
     const event = await calendarRequest(
       "/primary/events",
       "POST",
-      session.access_token,
+      accessToken,
       body
     )
     return NextResponse.json(event, { status: 201 })

@@ -1,0 +1,4 @@
+# Directorio de reportes de auditoría de seguridad
+# Los archivos aquí se generan automáticamente con /security_audit
+# Formato: YYYY-MM-DD_security-audit.md
+# Validaciones: YYYY-MM-DD_validation.md

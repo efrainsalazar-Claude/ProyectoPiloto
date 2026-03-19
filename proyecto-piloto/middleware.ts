@@ -6,9 +6,14 @@ const { auth } = NextAuth(authConfig)
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth
-  const isOnDashboard = req.nextUrl.pathname.startsWith("/dashboard")
+  const isProtected =
+    req.nextUrl.pathname.startsWith("/dashboard") ||
+    req.nextUrl.pathname.startsWith("/api/calendar")
 
-  if (isOnDashboard && !isLoggedIn) {
+  if (isProtected && !isLoggedIn) {
+    if (req.nextUrl.pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     return NextResponse.redirect(new URL("/login", req.url))
   }
 
