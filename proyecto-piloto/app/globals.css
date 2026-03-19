@@ -24,3 +24,175 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ============================================================
+   FullCalendar — overrides visuales
+   Light mode (default), dark mode dentro de media query
+   ============================================================ */
+
+/* --- Variables globales del calendario --- */
+.fc {
+  --fc-page-bg-color: transparent;
+  --fc-border-color: #e5e7eb;
+  --fc-today-bg-color: rgba(99, 102, 241, 0.04);
+  --fc-non-business-color: transparent;
+  --fc-now-indicator-color: #6366f1;
+  --fc-small-font-size: 0.75rem;
+  --fc-highlight-color: rgba(99, 102, 241, 0.12);
+  --fc-neutral-text-color: #6b7280;
+  --fc-button-bg-color: #ffffff;
+  --fc-button-border-color: #e5e7eb;
+  --fc-button-text-color: #111827;
+  --fc-button-hover-bg-color: #f3f4f6;
+  --fc-button-hover-border-color: #d1d5db;
+  --fc-button-active-bg-color: #e5e7eb;
+  --fc-button-active-border-color: #d1d5db;
+}
+
+@media (prefers-color-scheme: dark) {
+  .fc {
+    --fc-page-bg-color: transparent;
+    --fc-border-color: #1f2937;
+    --fc-today-bg-color: rgba(99, 102, 241, 0.06);
+    --fc-non-business-color: transparent;
+    --fc-now-indicator-color: #818cf8;
+    --fc-neutral-text-color: #4b5563;
+    --fc-button-bg-color: #111827;
+    --fc-button-border-color: #374151;
+    --fc-button-text-color: #f9fafb;
+    --fc-button-hover-bg-color: #1f2937;
+    --fc-button-hover-border-color: #4b5563;
+    --fc-button-active-bg-color: #374151;
+    --fc-button-active-border-color: #4b5563;
+  }
+}
+
+/* --- Toolbar --- */
+.fc .fc-toolbar {
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  .fc .fc-toolbar-title {
+    color: #f9fafb;
+  }
+}
+
+.fc .fc-button {
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: none;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.fc .fc-button:focus {
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
+  outline: none;
+}
+
+.fc .fc-button-group .fc-button {
+  border-radius: 0;
+}
+.fc .fc-button-group .fc-button:first-child {
+  border-radius: 6px 0 0 6px;
+}
+.fc .fc-button-group .fc-button:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+/* --- Header de días --- */
+.fc .fc-col-header-cell {
+  border-color: var(--fc-border-color);
+  padding: 6px 0;
+  background: transparent;
+}
+
+.fc .fc-col-header-cell-cushion {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #9ca3af;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .fc .fc-col-header-cell-cushion {
+    color: #6b7280;
+  }
+}
+
+/* --- Columna izquierda de horas --- */
+.fc .fc-timegrid-slot-label-cushion {
+  font-size: 0.68rem;
+  font-weight: 400;
+  color: #9ca3af;
+  padding-right: 10px;
+  padding-top: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .fc .fc-timegrid-slot-label-cushion {
+    color: #374151;
+  }
+}
+
+/* Altura fija por slot — todos los slots iguales, 30-min events tienen espacio para hora+título */
+.fc .fc-timegrid-slot {
+  height: 44px !important;
+}
+
+/* Quitar línea punteada de los half-slots (:30) */
+.fc .fc-timegrid-slot-minor {
+  border-top-style: dashed;
+  border-top-color: transparent;
+}
+
+/* --- Línea "ahora" --- */
+.fc .fc-timegrid-now-indicator-line {
+  border-color: var(--fc-now-indicator-color);
+  border-width: 1.5px;
+}
+
+.fc .fc-timegrid-now-indicator-arrow {
+  border-top-color: var(--fc-now-indicator-color);
+  border-bottom-color: var(--fc-now-indicator-color);
+}
+
+/* --- Grid exterior --- */
+.fc .fc-scrollgrid {
+  border-color: var(--fc-border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* --- Quitar estilos default del bloque de evento --- */
+.fc .fc-timegrid-event {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 4px;
+  margin: 1px 2px;
+}
+
+.fc .fc-event-main {
+  padding: 0;
+  height: 100%;
+}
+
+/* --- Selección drag-to-create --- */
+.fc .fc-highlight {
+  background: var(--fc-highlight-color);
+  border: none;
+}
