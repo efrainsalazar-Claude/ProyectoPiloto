@@ -2,9 +2,58 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
+import { useSession, signIn, signOut } from "next-auth/react"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const { data: session, status } = useSession()
+
+  const AuthButton = ({ mobile = false }: { mobile?: boolean }) => {
+    const baseClass = mobile
+      ? "block w-full text-center rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+      : "rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+
+    if (status === "loading") {
+      return <div className={`${baseClass} bg-gray-100 dark:bg-gray-800 text-transparent`}>...</div>
+    }
+
+    if (session) {
+      return (
+        <div className={`flex ${mobile ? "flex-col" : "items-center"} gap-2`}>
+          <div className="flex items-center gap-2">
+            {session.user?.image && (
+              <Image
+                src={session.user.image}
+                alt={session.user.name ?? "Usuario"}
+                width={28}
+                height={28}
+                className="rounded-full"
+              />
+            )}
+            <span className="text-sm text-gray-700 dark:text-gray-200 font-medium">
+              {session.user?.name?.split(" ")[0]}
+            </span>
+          </div>
+          <button
+            onClick={() => signOut()}
+            className={`${baseClass} bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200`}
+          >
+            Cerrar sesión
+          </button>
+        </div>
+      )
+    }
+
+    return (
+      <button
+        onClick={() => { signIn(); if (mobile) setIsOpen(false) }}
+        className={`${baseClass} bg-indigo-600 hover:bg-indigo-700 text-white`}
+      >
+        Login
+      </button>
+    )
+  }
 
   return (
     <nav className="bg-white dark:bg-gray-900 border-b border-indigo-100 dark:border-indigo-900">
@@ -13,18 +62,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 text-indigo-700 dark:text-indigo-400 font-semibold text-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
               <line x1="16" y1="2" x2="16" y2="6" />
               <line x1="8" y1="2" x2="8" y2="6" />
@@ -35,15 +73,10 @@ export default function Navbar() {
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              href="/login"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors"
-            >
-              Login
-            </Link>
+            <AuthButton />
           </div>
 
-          {/* Hamburger button (mobile) */}
+          {/* Hamburger button */}
           <button
             className="md:hidden flex items-center justify-center p-2 rounded-md text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition-colors"
             onClick={() => setIsOpen(!isOpen)}
@@ -69,13 +102,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       {isOpen && (
         <div className="md:hidden bg-white dark:bg-gray-900 border-t border-indigo-100 dark:border-indigo-900 px-4 py-3">
-          <Link
-            href="/login"
-            className="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors"
-            onClick={() => setIsOpen(false)}
-          >
-            Login
-          </Link>
+          <AuthButton mobile />
         </div>
       )}
     </nav>
