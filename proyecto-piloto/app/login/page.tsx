@@ -4,7 +4,7 @@ import GoogleSignInButton from "@/src/components/GoogleSignInButton"
 
 export default async function LoginPage() {
   const session = await auth()
-  if (session) redirect("/")
+  if (session) redirect("/dashboard")
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-gray-900 dark:to-indigo-950 flex items-center justify-center px-4">

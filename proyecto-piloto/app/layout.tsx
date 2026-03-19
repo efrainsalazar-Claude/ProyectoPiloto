@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
-import Navbar from "@/src/components/Navbar"
+import ConditionalNavbar from "@/src/components/ConditionalNavbar"
 import { SessionProvider } from "next-auth/react"
 import { auth } from "@/auth"
 
@@ -19,7 +19,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SessionProvider session={session}>
-          <Navbar />
+          <ConditionalNavbar />
           {children}
         </SessionProvider>
       </body>

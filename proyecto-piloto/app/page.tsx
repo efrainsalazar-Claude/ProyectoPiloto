@@ -1,6 +1,11 @@
 import Link from "next/link"
+import { auth } from "@/auth"
+import { redirect } from "next/navigation"
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth()
+  if (session) redirect("/dashboard")
+
   return (
     <main>
       {/* Hero Section */}
@@ -92,7 +97,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-50 dark:bg-gray-900 border-t border-indigo-100 dark:border-indigo-900 px-4 py-8">
+      <footer className="bg-gray-50 dark:bg-gray-900 border-t border-indigo-100 dark:border-indigo-900 px-4 py-4">
         <p className="text-center text-gray-500 dark:text-gray-400 text-sm">
           © 2026 CalendarAI
         </p>
