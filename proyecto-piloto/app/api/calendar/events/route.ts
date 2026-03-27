@@ -9,11 +9,11 @@ const MAX_PAGES = 10
 export async function GET(request: NextRequest) {
   try {
     const { accessToken, userId, error } = await getServerToken(request)
-    if (!accessToken) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
     if (error === "RefreshTokenError") {
       return NextResponse.json({ error: "Session expired, please sign in again" }, { status: 401 })
+    }
+    if (!accessToken) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     if (userId && !checkRateLimit(userId)) {
       return NextResponse.json({ error: "Too Many Requests" }, { status: 429 })
@@ -66,11 +66,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const { accessToken, userId, error } = await getServerToken(request)
-    if (!accessToken) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
     if (error === "RefreshTokenError") {
       return NextResponse.json({ error: "Session expired, please sign in again" }, { status: 401 })
+    }
+    if (!accessToken) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     if (userId && !checkRateLimit(userId)) {
       return NextResponse.json({ error: "Too Many Requests" }, { status: 429 })
