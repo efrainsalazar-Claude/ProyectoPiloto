@@ -41,7 +41,6 @@ export default function Sidebar({ user }: SidebarProps) {
     {
       href: "/dashboard/stats",
       label: "Estadísticas",
-      disabled: true,
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-shrink-0">
           <line x1="18" y1="20" x2="18" y2="10" />
@@ -114,27 +113,6 @@ export default function Sidebar({ user }: SidebarProps) {
       <nav className="flex-1 px-2 py-4 space-y-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href
-          if (item.disabled) {
-            return (
-              <div
-                key={item.href}
-                title={collapsed ? item.label : undefined}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-400 dark:text-gray-600 cursor-not-allowed ${
-                  collapsed ? "justify-center" : ""
-                }`}
-              >
-                {item.icon}
-                {!collapsed && (
-                  <>
-                    <span>{item.label}</span>
-                    <span className="ml-auto text-xs bg-gray-100 dark:bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full">
-                      Pronto
-                    </span>
-                  </>
-                )}
-              </div>
-            )
-          }
           return (
             <Link
               key={item.href}

@@ -196,3 +196,20 @@ body {
   background: var(--fc-highlight-color);
   border: none;
 }
+
+/* ============================================================
+   Stats / Recharts — variables de dark mode
+   ============================================================ */
+:root {
+  --stats-grid: #e5e7eb;
+  --stats-axis-text: #6b7280;
+  --stats-tooltip-bg: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --stats-grid: #1f2937;
+    --stats-axis-text: #9ca3af;
+    --stats-tooltip-bg: #111827;
+  }
+}

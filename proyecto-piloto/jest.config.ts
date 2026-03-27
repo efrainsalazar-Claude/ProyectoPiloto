@@ -6,10 +6,11 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  testMatch: ['**/__tests__/**/*.test.ts'],
+  testMatch: ['**/__tests__/**/*.test.{ts,tsx}'],
   passWithNoTests: true,
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   transformIgnorePatterns: [
-    '/node_modules/(?!(next-auth|@auth/core|@panva|preact|preact-render-to-string)/)',
+    '/node_modules/(?!(next-auth|@auth/core|@panva|preact|preact-render-to-string|recharts|d3-.*|internmap|robust-predicates)/)',
   ],
 }
 
