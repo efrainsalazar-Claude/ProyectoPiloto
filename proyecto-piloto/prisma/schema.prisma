@@ -17,6 +17,11 @@ model User {
   emailVerified DateTime? @map("email_verified")
   image         String?
   createdAt     DateTime  @default(now())
+  role          String?
+  company       String?
+  jobTitle      String?   @map("job_title")
+  department    String?
+  updatedAt     DateTime? @updatedAt @map("updated_at")
   accounts      Account[]
   sessions      Session[]
 
